@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 export default function Students() {
   const [students, setStudents] = useState<Student[]>([]);
   const [editing, setEditing] = useState<Student | null>(null);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { load(); }, []);
@@ -14,7 +15,15 @@ export default function Students() {
     setStudents(await getAllStudents());
   }
 
-  function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleImportClick() {
+    setShowImportDialog(true);
+  }
+
+  function handleBrowseFile() {
+    fileRef.current?.click();
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     Papa.parse(file, {
@@ -31,6 +40,7 @@ export default function Students() {
         }));
         await putStudents(imported);
         await load();
+        setShowImportDialog(false);
         if (fileRef.current) fileRef.current.value = '';
       },
     });
@@ -65,11 +75,22 @@ export default function Students() {
       <h1>Students</h1>
       <div className="toolbar">
         <button className="btn btn-primary" onClick={handleAdd}>Add Student</button>
-        <label className="btn">
-          Import CSV
-          <input type="file" accept=".csv" hidden ref={fileRef} onChange={handleImport} />
-        </label>
+        <button className="btn" onClick={handleImportClick}>Import CSV</button>
+        <input type="file" accept=".csv" hidden ref={fileRef} onChange={handleFileChange} />
       </div>
+
+      {showImportDialog && (
+        <div className="form-card">
+          <h3>CSV Import Format</h3>
+          <p className="import-desc">Your CSV file should have a header row with these columns:</p>
+          <pre className="csv-example">student_id,first_name,last_name,nickname,note{'\n'}001,John,Smith,Johnny,Transfer student{'\n'}002,Jane,Doe,,{'\n'}003,Bob,Wilson,Bobby,Needs front seat</pre>
+          <p className="import-desc">Columns <strong>nickname</strong> and <strong>note</strong> are optional.</p>
+          <div className="form-actions">
+            <button className="btn btn-primary" onClick={handleBrowseFile}>Browse File...</button>
+            <button className="btn" onClick={() => setShowImportDialog(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
 
       {editing && (
         <StudentForm student={editing} onSave={handleSave} onCancel={() => setEditing(null)} />
