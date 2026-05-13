@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:netlify": "netlify dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "idb": "^8.0.3",
+    "@netlify/blobs": "^10.7.5",
+    "@netlify/functions": "^5.2.0",
     "papaparse": "^5.5.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

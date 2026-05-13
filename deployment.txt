@@ -1,82 +1,69 @@
 Attender Deployment Guide
 =========================
 
-This is a static PWA with no backend. Deployment means serving the built
-files from any static hosting provider.
+This app uses Netlify Functions + Netlify Blobs for server-side data storage.
+It must be deployed to Netlify.
 
 
 Prerequisites
 -------------
 - Node.js 18+ installed
 - npm installed
+- A Netlify account (free tier works)
+- Git repository pushed to GitHub (already done: https://github.com/rvpals/attender_pwa.git)
 
 
-Build for Production
---------------------
-1. Open a terminal in the project root directory
-2. Install dependencies (if not already done):
-       npm install
-3. Build the production bundle:
-       npm run build
-4. The output will be in the "dist" folder
+Deploy to Netlify
+-----------------
+
+1. Log in to https://app.netlify.com
+2. Click "Add new site" > "Import an existing project"
+3. Connect to GitHub and select the "attender_pwa" repository
+4. Netlify will auto-detect settings from netlify.toml:
+     - Build command: npm run build
+     - Publish directory: dist
+5. Click "Deploy site"
+6. Wait for the build to complete (usually under 1 minute)
+7. Your site will be live at a *.netlify.app URL
 
 
-Deployment Options
-------------------
+Custom Domain (Optional)
+-------------------------
+1. In Netlify dashboard > Site settings > Domain management
+2. Click "Add custom domain"
+3. Follow DNS configuration instructions
+4. HTTPS is provisioned automatically
 
-Option A: Simple Local/Network Hosting
-  1. Build the project (see above)
-  2. Serve the dist folder with any static file server:
-         npx serve dist
-  3. Access from any device on the same network using the displayed URL
 
-Option B: GitHub Pages
-  1. Build the project
-  2. Push the dist folder contents to a gh-pages branch
-  3. Or use the gh-pages npm package:
-         npm install -D gh-pages
-         npx gh-pages -d dist
-  4. Enable GitHub Pages in the repository settings
+Local Development
+-----------------
+To test with the Netlify Functions API locally:
 
-Option C: Netlify
-  1. Connect your repository to Netlify
-  2. Set build command: npm run build
-  3. Set publish directory: dist
-  4. Deploy
+1. Install Netlify CLI:
+       npm install -g netlify-cli
 
-Option D: Vercel
-  1. Connect your repository to Vercel
-  2. Framework preset will auto-detect Vite
-  3. Deploy (no additional configuration needed)
+2. Link your local project to the Netlify site:
+       netlify link
 
-Option E: Any Web Server (Apache, Nginx, IIS)
-  1. Build the project
-  2. Copy the contents of the dist folder to your web server's root directory
-  3. Configure the server to redirect all routes to index.html
-     (required for client-side routing)
+3. Run the full dev environment:
+       npm run dev:netlify
 
-     Nginx example:
-         location / {
-             try_files $uri $uri/ /index.html;
-         }
-
-     Apache (.htaccess):
-         RewriteEngine On
-         RewriteCond %{REQUEST_FILENAME} !-f
-         RewriteCond %{REQUEST_FILENAME} !-d
-         RewriteRule . /index.html [L]
+   This starts Vite on port 5173 and proxies API calls through Netlify Dev,
+   giving you access to Netlify Blobs locally.
 
 
 PWA Requirements
 ----------------
-- HTTPS is required for the service worker to activate (localhost is exempt)
+- HTTPS is required for the service worker (Netlify provides this automatically)
 - Add real icon-192.png and icon-512.png files in the public folder before
   building if you want the full install experience on mobile devices
 
 
 Notes
 -----
-- All data is stored in the user's browser (IndexedDB). There is no server
-  database to configure.
-- Clearing browser data will erase all attendance records.
-- The service worker enables offline use after the first visit.
+- Data is stored in Netlify Blobs (server-side key-value store). It persists
+  across devices and browsers — not tied to a single browser session.
+- The Netlify free tier includes 125,000 function invocations/month, which is
+  far more than a single classroom would use.
+- The service worker caches the app shell for fast loading, but data always
+  comes from the server.
