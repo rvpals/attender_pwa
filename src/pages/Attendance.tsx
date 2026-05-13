@@ -1,0 +1,111 @@
+import { useState, useEffect } from 'react';
+import { getAllClasses, getClass, getAttendanceForClassDate, putAttendance, getAllStudents } from '../db';
+import type { ClassRoom, Student, AttendanceRecord } from '../types';
+
+export default function Attendance() {
+  const [classes, setClasses] = useState<ClassRoom[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [roster, setRoster] = useState<Student[]>([]);
+  const [presentIds, setPresentIds] = useState<Set<string>>(new Set());
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    getAllClasses().then(setClasses);
+  }, []);
+
+  useEffect(() => {
+    if (selectedClassId && date) loadRoster();
+  }, [selectedClassId, date]);
+
+  async function loadRoster() {
+    const cls = await getClass(selectedClassId);
+    if (!cls) return;
+    const allStudents = await getAllStudents();
+    const classStudents = allStudents.filter(s => cls.studentIds.includes(s.id));
+    classStudents.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    setRoster(classStudents);
+
+    const existing = await getAttendanceForClassDate(selectedClassId, date);
+    setPresentIds(new Set(existing?.presentStudentIds || []));
+    setSaved(false);
+  }
+
+  function toggleStudent(id: string) {
+    setPresentIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    setSaved(false);
+  }
+
+  async function handleSave() {
+    const existing = await getAttendanceForClassDate(selectedClassId, date);
+    const record: AttendanceRecord = {
+      id: existing?.id || crypto.randomUUID(),
+      classId: selectedClassId,
+      date,
+      presentStudentIds: [...presentIds],
+    };
+    await putAttendance(record);
+    setSaved(true);
+  }
+
+  function markAllPresent() {
+    setPresentIds(new Set(roster.map(s => s.id)));
+    setSaved(false);
+  }
+
+  function markAllAbsent() {
+    setPresentIds(new Set());
+    setSaved(false);
+  }
+
+  return (
+    <div className="page">
+      <h1>Take Attendance</h1>
+
+      <div className="attendance-controls">
+        <select value={selectedClassId} onChange={e => setSelectedClassId(e.target.value)}>
+          <option value="">Select a class...</option>
+          {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        <input type="date" value={date} onChange={e => setDate(e.target.value)} />
+      </div>
+
+      {roster.length > 0 && (
+        <>
+          <div className="attendance-summary">
+            <span>{presentIds.size}/{roster.length} present</span>
+            <button className="btn-sm" onClick={markAllPresent}>All Present</button>
+            <button className="btn-sm" onClick={markAllAbsent}>All Absent</button>
+          </div>
+
+          <ul className="attendance-list">
+            {roster.map(s => (
+              <li
+                key={s.id}
+                className={`attendance-item ${presentIds.has(s.id) ? 'present' : 'absent'}`}
+                onClick={() => toggleStudent(s.id)}
+              >
+                <span className="attendance-name">
+                  {s.lastName}, {s.firstName}
+                  {s.nickname && <span className="nickname"> "{s.nickname}"</span>}
+                </span>
+                <span className="attendance-status">
+                  {presentIds.has(s.id) ? '✓' : '✗'}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <button className="btn btn-primary btn-save" onClick={handleSave}>
+            {saved ? 'Saved ✓' : 'Save Attendance'}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
