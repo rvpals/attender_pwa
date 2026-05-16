@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Students from './pages/Students';
@@ -5,6 +6,8 @@ import Classes from './pages/Classes';
 import Attendance from './pages/Attendance';
 import Reports from './pages/Reports';
 import Preferences from './pages/Preferences';
+import About from './pages/About';
+import { getPreferences } from './db';
 
 function NavBar() {
   const location = useLocation();
@@ -18,6 +21,12 @@ function NavBar() {
 }
 
 export default function App() {
+  useEffect(() => {
+    getPreferences().then(prefs => {
+      if (prefs.theme) document.documentElement.setAttribute('data-theme', prefs.theme);
+    });
+  }, []);
+
   return (
     <BrowserRouter>
       <NavBar />
@@ -28,6 +37,7 @@ export default function App() {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/preferences" element={<Preferences />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </BrowserRouter>
   );

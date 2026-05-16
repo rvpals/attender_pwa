@@ -49,13 +49,17 @@ export default function Students() {
   async function handleSave(student: Student) {
     await putStudent(student);
     setEditing(null);
-    await load();
+    setStudents(prev => {
+      const idx = prev.findIndex(s => s.id === student.id);
+      if (idx >= 0) return prev.map(s => s.id === student.id ? student : s);
+      return [...prev, student];
+    });
   }
 
   async function handleDelete(id: string) {
     if (confirm('Delete this student?')) {
       await deleteStudent(id);
-      await load();
+      setStudents(prev => prev.filter(s => s.id !== id));
     }
   }
 

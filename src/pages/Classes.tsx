@@ -21,13 +21,17 @@ export default function Classes() {
   async function handleSave(cls: ClassRoom) {
     await putClass(cls);
     setEditing(null);
-    await load();
+    setClasses(prev => {
+      const idx = prev.findIndex(c => c.id === cls.id);
+      if (idx >= 0) return prev.map(c => c.id === cls.id ? cls : c);
+      return [...prev, cls];
+    });
   }
 
   async function handleDelete(id: string) {
     if (confirm('Delete this class?')) {
       await deleteClass(id);
-      await load();
+      setClasses(prev => prev.filter(c => c.id !== id));
     }
   }
 

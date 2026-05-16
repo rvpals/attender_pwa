@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAllClasses, getClass, getAttendanceForClassDate, putAttendance, getAllStudents } from '../db';
 import type { ClassRoom, Student, AttendanceRecord } from '../types';
 
@@ -8,7 +9,8 @@ export default function Attendance() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [roster, setRoster] = useState<Student[]>([]);
   const [presentIds, setPresentIds] = useState<Set<string>>(new Set());
-  const [saved, setSaved] = useState(false);
+  const [savedMessage, setSavedMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllClasses().then(setClasses);
@@ -28,7 +30,7 @@ export default function Attendance() {
 
     const existing = await getAttendanceForClassDate(selectedClassId, date);
     setPresentIds(new Set(existing?.presentStudentIds || []));
-    setSaved(false);
+    setSavedMessage('');
   }
 
   function toggleStudent(id: string) {
@@ -38,7 +40,7 @@ export default function Attendance() {
       else next.add(id);
       return next;
     });
-    setSaved(false);
+    setSavedMessage('');
   }
 
   async function handleSave() {
@@ -50,7 +52,9 @@ export default function Attendance() {
       presentStudentIds: [...presentIds],
     };
     await putAttendance(record);
-    setSaved(true);
+    const className = classes.find(c => c.id === selectedClassId)?.name || '';
+    setSavedMessage(`${className} for ${date} attendance is saved.`);
+    setTimeout(() => navigate('/'), 2000);
   }
 
   function markAllPresent() {
@@ -101,9 +105,10 @@ export default function Attendance() {
             ))}
           </ul>
 
-          <button className="btn btn-primary btn-save" onClick={handleSave}>
-            {saved ? 'Saved ✓' : 'Save Attendance'}
+          <button className="btn btn-primary btn-save" onClick={handleSave} disabled={!!savedMessage}>
+            {savedMessage ? 'Saved ✓' : 'Save Attendance'}
           </button>
+          {savedMessage && <p style={{ color: 'var(--success)', fontWeight: 600, textAlign: 'center', marginTop: '0.75rem' }}>{savedMessage}</p>}
         </>
       )}
     </div>
