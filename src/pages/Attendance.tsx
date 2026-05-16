@@ -59,12 +59,12 @@ export default function Attendance() {
 
   function markAllPresent() {
     setPresentIds(new Set(roster.map(s => s.id)));
-    setSaved(false);
+    setSavedMessage('');
   }
 
   function markAllAbsent() {
     setPresentIds(new Set());
-    setSaved(false);
+    setSavedMessage('');
   }
 
   return (
