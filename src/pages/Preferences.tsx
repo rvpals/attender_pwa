@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getPreferences, putPreferences } from '../db';
 
 const THEMES = [
@@ -13,8 +14,8 @@ export default function Preferences() {
   const [appName, setAppName] = useState('');
   const [tagline, setTagline] = useState('');
   const [theme, setTheme] = useState('ocean-blue');
-  const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getPreferences().then(prefs => {
@@ -33,8 +34,7 @@ export default function Preferences() {
   async function handleSave() {
     await putPreferences({ id: 'app-preferences', appName, tagline, theme });
     document.title = appName || "Ting Sun's Attender";
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    navigate('/');
   }
 
   if (loading) return <div className="page"><p>Loading...</p></div>;
@@ -109,7 +109,6 @@ export default function Preferences() {
       <button className="btn btn-primary btn-save" onClick={handleSave}>
         Save
       </button>
-      {saved && <p style={{ color: 'var(--success)', fontWeight: 500, textAlign: 'center', marginTop: '0.75rem' }}>Preferences saved!</p>}
     </div>
   );
 }
