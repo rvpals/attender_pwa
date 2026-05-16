@@ -46,58 +46,65 @@ export default function Home() {
       <nav className="home-nav">
         <Link to="/attendance" className="nav-card nav-card-primary">
           <span className="nav-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 11l3 3L22 4" />
-              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 3h16a2 2 0 012 2v14a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2zm2 4v2h2V7H6zm4 0v2h8V7h-8zM6 11v2h2v-2H6zm4 0v2h8v-2h-8zM6 15v2h2v-2H6zm4 0v2h8v-2h-8z" />
+              <path d="M17 8l-5 5-2-2-1.5 1.5L11.5 15.5 18.5 8.5z" opacity="0.6" />
             </svg>
           </span>
           <span className="nav-card-label">Take Attendance</span>
         </Link>
         <Link to="/classes" className="nav-card">
           <span className="nav-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" opacity="0.4" />
+              <path d="M2 12l10 5 10-5" opacity="0.7" />
             </svg>
           </span>
           <span className="nav-card-label">Manage Classes</span>
         </Link>
         <Link to="/students" className="nav-card">
           <span className="nav-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 00-3-3.87" />
-              <path d="M16 3.13a4 4 0 010 7.75" />
+              <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2H3z" />
+              <circle cx="17" cy="7" r="3" opacity="0.6" />
+              <path d="M17 14h2a3 3 0 013 3v2h-5" opacity="0.6" />
             </svg>
           </span>
           <span className="nav-card-label">Manage Students</span>
         </Link>
         <Link to="/reports" className="nav-card">
           <span className="nav-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 20V10" />
-              <path d="M12 20V4" />
-              <path d="M6 20v-6" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="4" y="12" width="4" height="9" rx="1" opacity="0.5" />
+              <rect x="10" y="6" width="4" height="15" rx="1" />
+              <rect x="16" y="9" width="4" height="12" rx="1" opacity="0.7" />
+              <circle cx="6" cy="10" r="1.5" />
+              <circle cx="12" cy="4" r="1.5" />
+              <circle cx="18" cy="7" r="1.5" />
+              <path d="M6 10l6-6 6 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </span>
           <span className="nav-card-label">Reports</span>
         </Link>
         <Link to="/preferences" className="nav-card">
           <span className="nav-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 7h3v2H4V7zm6 0h10v2H10V7zM4 15h3v2H4v-2zm6 0h10v2H10v-2zM14 11h3v2h-3v-2zm-10 0h8v2H4v-2z" opacity="0.4" />
+              <circle cx="8" cy="8" r="3" />
+              <circle cx="16" cy="16" r="3" />
+              <circle cx="14" cy="12" r="2.5" opacity="0.7" />
             </svg>
           </span>
           <span className="nav-card-label">Preferences</span>
         </Link>
         <Link to="/about" className="nav-card">
           <span className="nav-card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
+              <circle cx="12" cy="8" r="1.5" fill="white" />
+              <rect x="11" y="11" width="2" height="6" rx="1" fill="white" />
             </svg>
           </span>
           <span className="nav-card-label">About the App</span>
