@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllClasses, getClass, getAttendanceForClassDate, putAttendance, getAllStudents } from '../db';
 import type { ClassRoom, Student, AttendanceRecord } from '../types';
+import { useViewMode } from '../hooks/useViewMode';
+import ViewToggle from '../components/ViewToggle';
 
 export default function Attendance() {
   const [classes, setClasses] = useState<ClassRoom[]>([]);
@@ -11,6 +13,7 @@ export default function Attendance() {
   const [presentIds, setPresentIds] = useState<Set<string>>(new Set());
   const [savedMessage, setSavedMessage] = useState('');
   const navigate = useNavigate();
+  const [viewMode, toggleView] = useViewMode('attendance-view');
 
   useEffect(() => {
     getAllClasses().then(setClasses);
@@ -85,25 +88,46 @@ export default function Attendance() {
             <span>{presentIds.size}/{roster.length} present</span>
             <button className="btn-sm" onClick={markAllPresent}>All Present</button>
             <button className="btn-sm" onClick={markAllAbsent}>All Absent</button>
+            <ViewToggle mode={viewMode} onToggle={toggleView} />
           </div>
 
-          <ul className="attendance-list">
-            {roster.map(s => (
-              <li
-                key={s.id}
-                className={`attendance-item ${presentIds.has(s.id) ? 'present' : 'absent'}`}
-                onClick={() => toggleStudent(s.id)}
-              >
-                <span className="attendance-name">
-                  {s.lastName}, {s.firstName}
-                  {s.nickname && <span className="nickname"> "{s.nickname}"</span>}
-                </span>
-                <span className="attendance-status">
-                  {presentIds.has(s.id) ? '✓' : '✗'}
-                </span>
-              </li>
-            ))}
-          </ul>
+          {viewMode === 'list' ? (
+            <ul className="attendance-list">
+              {roster.map(s => (
+                <li
+                  key={s.id}
+                  className={`attendance-item ${presentIds.has(s.id) ? 'present' : 'absent'}`}
+                  onClick={() => toggleStudent(s.id)}
+                >
+                  <span className="attendance-name">
+                    {s.lastName}, {s.firstName}
+                    {s.nickname && <span className="nickname"> "{s.nickname}"</span>}
+                  </span>
+                  <span className="attendance-status">
+                    {presentIds.has(s.id) ? '✓' : '✗'}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="card-grid card-grid-attendance">
+              {roster.map(s => (
+                <div
+                  key={s.id}
+                  className={`item-card item-card-attendance ${presentIds.has(s.id) ? 'present' : 'absent'}`}
+                  onClick={() => toggleStudent(s.id)}
+                >
+                  <div className={`item-card-avatar ${presentIds.has(s.id) ? 'item-card-avatar-present' : 'item-card-avatar-absent'}`}>
+                    {presentIds.has(s.id) ? '✓' : '✗'}
+                  </div>
+                  <div className="item-card-body">
+                    <div className="item-card-title">{s.firstName} {s.lastName}</div>
+                    {s.nickname && <div className="item-card-subtitle">"{s.nickname}"</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <button className="btn btn-primary btn-save" onClick={handleSave} disabled={!!savedMessage}>
             {savedMessage ? 'Saved ✓' : 'Save Attendance'}

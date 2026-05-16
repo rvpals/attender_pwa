@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getAllClasses, putClass, deleteClass, getAllStudents } from '../db';
 import type { ClassRoom, Student } from '../types';
+import { useViewMode } from '../hooks/useViewMode';
+import ViewToggle from '../components/ViewToggle';
 
 export default function Classes() {
   const [classes, setClasses] = useState<ClassRoom[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [editing, setEditing] = useState<ClassRoom | null>(null);
+  const [viewMode, toggleView] = useViewMode('classes-view');
 
   useEffect(() => { load(); }, []);
 
@@ -40,26 +43,51 @@ export default function Classes() {
       <h1>Classes</h1>
       <div className="toolbar">
         <button className="btn btn-primary" onClick={handleAdd}>Add Class</button>
+        <ViewToggle mode={viewMode} onToggle={toggleView} />
       </div>
 
       {editing && (
         <ClassForm cls={editing} students={students} onSave={handleSave} onCancel={() => setEditing(null)} />
       )}
 
-      <ul className="class-list">
-        {classes.map(c => (
-          <li key={c.id} className="class-item">
-            <div>
-              <strong>{c.name}</strong>
-              <span className="class-count">{c.studentIds.length} students</span>
+      {viewMode === 'list' ? (
+        <ul className="class-list">
+          {classes.map(c => (
+            <li key={c.id} className="class-item">
+              <div>
+                <strong>{c.name}</strong>
+                <span className="class-count">{c.studentIds.length} students</span>
+              </div>
+              <div className="student-actions">
+                <button className="btn-sm" onClick={() => setEditing(c)}>Edit</button>
+                <button className="btn-sm btn-danger" onClick={() => handleDelete(c.id)}>Del</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="card-grid">
+          {classes.map(c => (
+            <div key={c.id} className="item-card">
+              <div className="item-card-avatar item-card-avatar-class">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" opacity="0.4" />
+                  <path d="M2 12l10 5 10-5" opacity="0.7" />
+                </svg>
+              </div>
+              <div className="item-card-body">
+                <div className="item-card-title">{c.name}</div>
+                <div className="item-card-meta">{c.studentIds.length} students</div>
+              </div>
+              <div className="item-card-actions">
+                <button className="btn-sm" onClick={() => setEditing(c)}>Edit</button>
+                <button className="btn-sm btn-danger" onClick={() => handleDelete(c.id)}>Del</button>
+              </div>
             </div>
-            <div className="student-actions">
-              <button className="btn-sm" onClick={() => setEditing(c)}>Edit</button>
-              <button className="btn-sm btn-danger" onClick={() => handleDelete(c.id)}>Del</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

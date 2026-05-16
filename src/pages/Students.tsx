@@ -2,12 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { getAllStudents, putStudent, putStudents, deleteStudent } from '../db';
 import type { Student } from '../types';
 import Papa from 'papaparse';
+import { useViewMode } from '../hooks/useViewMode';
+import ViewToggle from '../components/ViewToggle';
 
 export default function Students() {
   const [students, setStudents] = useState<Student[]>([]);
   const [editing, setEditing] = useState<Student | null>(null);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [viewMode, toggleView] = useViewMode('students-view');
 
   useEffect(() => { load(); }, []);
 
@@ -80,6 +83,7 @@ export default function Students() {
       <div className="toolbar">
         <button className="btn btn-primary" onClick={handleAdd}>Add Student</button>
         <button className="btn" onClick={handleImportClick}>Import CSV</button>
+        <ViewToggle mode={viewMode} onToggle={toggleView} />
         <input type="file" accept=".csv" hidden ref={fileRef} onChange={handleFileChange} />
       </div>
 
@@ -100,22 +104,44 @@ export default function Students() {
         <StudentForm student={editing} onSave={handleSave} onCancel={() => setEditing(null)} />
       )}
 
-      <ul className="student-list">
-        {students.map(s => (
-          <li key={s.id} className="student-item">
-            <div className="student-info">
-              <strong>{s.lastName}, {s.firstName}</strong>
-              {s.nickname && <span className="nickname">"{s.nickname}"</span>}
-              <span className="student-id">ID: {s.studentId}</span>
-              {s.note && <span className="note">{s.note}</span>}
+      {viewMode === 'list' ? (
+        <ul className="student-list">
+          {students.map(s => (
+            <li key={s.id} className="student-item">
+              <div className="student-info">
+                <strong>{s.lastName}, {s.firstName}</strong>
+                {s.nickname && <span className="nickname">"{s.nickname}"</span>}
+                <span className="student-id">ID: {s.studentId}</span>
+                {s.note && <span className="note">{s.note}</span>}
+              </div>
+              <div className="student-actions">
+                <button className="btn-sm" onClick={() => setEditing(s)}>Edit</button>
+                <button className="btn-sm btn-danger" onClick={() => handleDelete(s.id)}>Del</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="card-grid">
+          {students.map(s => (
+            <div key={s.id} className="item-card">
+              <div className="item-card-avatar">
+                {s.firstName[0]}{s.lastName[0]}
+              </div>
+              <div className="item-card-body">
+                <div className="item-card-title">{s.firstName} {s.lastName}</div>
+                {s.nickname && <div className="item-card-subtitle">"{s.nickname}"</div>}
+                <div className="item-card-meta">ID: {s.studentId}</div>
+                {s.note && <div className="item-card-meta">{s.note}</div>}
+              </div>
+              <div className="item-card-actions">
+                <button className="btn-sm" onClick={() => setEditing(s)}>Edit</button>
+                <button className="btn-sm btn-danger" onClick={() => handleDelete(s.id)}>Del</button>
+              </div>
             </div>
-            <div className="student-actions">
-              <button className="btn-sm" onClick={() => setEditing(s)}>Edit</button>
-              <button className="btn-sm btn-danger" onClick={() => handleDelete(s.id)}>Del</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
