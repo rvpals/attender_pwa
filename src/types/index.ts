@@ -19,3 +19,8 @@ export interface AttendanceRecord {
   date: string; // ISO date string YYYY-MM-DD
   presentStudentIds: string[];
 }
+
+export interface Preferences {
+  id: string;
+  tagline: string;
+}

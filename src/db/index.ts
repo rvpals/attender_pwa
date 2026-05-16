@@ -1,4 +1,4 @@
-import type { Student, ClassRoom, AttendanceRecord } from '../types';
+import type { Student, ClassRoom, AttendanceRecord, Preferences } from '../types';
 
 const API_BASE = '/.netlify/functions/api';
 
@@ -67,4 +67,13 @@ export async function putAttendance(record: AttendanceRecord): Promise<void> {
 
 export async function deleteAttendance(id: string): Promise<void> {
   await request(`/attendance/${id}`, { method: 'DELETE' });
+}
+
+// Preferences
+export async function getPreferences(): Promise<Preferences> {
+  return request('/preferences');
+}
+
+export async function putPreferences(prefs: Preferences): Promise<void> {
+  await request('/preferences', { method: 'POST', body: JSON.stringify(prefs) });
 }

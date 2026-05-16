@@ -1,6 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getPreferences } from '../db';
 
 export default function Home() {
+  const [tagline, setTagline] = useState('A simple way to take attendance.');
+
+  useEffect(() => {
+    getPreferences().then(prefs => {
+      if (prefs.tagline) setTagline(prefs.tagline);
+    });
+  }, []);
+
   return (
     <div className="page home-page">
       <div className="hero">
@@ -28,8 +38,8 @@ export default function Home() {
               <path d="M29.5 45.5l2 2 4.5-4.5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h1 className="logo-title">Attender</h1>
-          <p className="logo-subtitle">A simple way to take attendance.</p>
+          <h1 className="logo-title">Ting Sun's Attender</h1>
+          <p className="logo-subtitle">{tagline}</p>
         </div>
       </div>
 
@@ -72,6 +82,15 @@ export default function Home() {
             </svg>
           </span>
           <span className="nav-card-label">Reports</span>
+        </Link>
+        <Link to="/preferences" className="nav-card">
+          <span className="nav-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg>
+          </span>
+          <span className="nav-card-label">Preferences</span>
         </Link>
       </nav>
     </div>

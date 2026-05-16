@@ -4,6 +4,7 @@ import Students from './pages/Students';
 import Classes from './pages/Classes';
 import Attendance from './pages/Attendance';
 import Reports from './pages/Reports';
+import Preferences from './pages/Preferences';
 
 function NavBar() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/classes" element={<Classes />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/preferences" element={<Preferences />} />
       </Routes>
     </BrowserRouter>
   );

@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Attender',
-        short_name: 'Attender',
+        name: "Ting Sun's Attender",
+        short_name: "Ting Sun's Attender",
         description: 'Simple attendance tracker for teachers',
         theme_color: '#2563eb',
         background_color: '#f8fafc',

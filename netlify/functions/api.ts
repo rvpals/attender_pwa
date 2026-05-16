@@ -102,6 +102,24 @@ export default async function handler(req: Request, context: Context) {
       return new Response(JSON.stringify({ ok: true }), { headers });
     }
 
+    // /preferences
+    if (path === '/preferences' && method === 'GET') {
+      const store = getStore('preferences');
+      const prefs = await store.get('app-preferences', { type: 'json' });
+      if (!prefs) {
+        return new Response(JSON.stringify({ id: 'app-preferences', tagline: '' }), { headers });
+      }
+      return new Response(JSON.stringify(prefs), { headers });
+    }
+
+    if (path === '/preferences' && method === 'POST') {
+      const store = getStore('preferences');
+      const prefs = await req.json();
+      prefs.id = 'app-preferences';
+      await store.setJSON('app-preferences', prefs);
+      return new Response(JSON.stringify(prefs), { status: 201, headers });
+    }
+
     return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500, headers });
