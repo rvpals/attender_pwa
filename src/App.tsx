@@ -24,6 +24,7 @@ export default function App() {
   useEffect(() => {
     getPreferences().then(prefs => {
       if (prefs.theme) document.documentElement.setAttribute('data-theme', prefs.theme);
+      document.title = prefs.appName || "Ting Sun's Attender";
     });
   }, []);
 

@@ -3,10 +3,12 @@ import { useState, useEffect } from 'react';
 import { getPreferences } from '../db';
 
 export default function Home() {
+  const [appName, setAppName] = useState("Ting Sun's Attender");
   const [tagline, setTagline] = useState('A simple way to take attendance.');
 
   useEffect(() => {
     getPreferences().then(prefs => {
+      if (prefs.appName) setAppName(prefs.appName);
       if (prefs.tagline) setTagline(prefs.tagline);
     });
   }, []);
@@ -38,7 +40,7 @@ export default function Home() {
               <path d="M29.5 45.5l2 2 4.5-4.5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h1 className="logo-title">Ting Sun's Attender</h1>
+          <h1 className="logo-title">{appName}</h1>
           <p className="logo-subtitle">{tagline}</p>
         </div>
       </div>

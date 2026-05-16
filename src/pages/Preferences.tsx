@@ -10,6 +10,7 @@ const THEMES = [
 ];
 
 export default function Preferences() {
+  const [appName, setAppName] = useState('');
   const [tagline, setTagline] = useState('');
   const [theme, setTheme] = useState('ocean-blue');
   const [saved, setSaved] = useState(false);
@@ -17,6 +18,7 @@ export default function Preferences() {
 
   useEffect(() => {
     getPreferences().then(prefs => {
+      if (prefs.appName) setAppName(prefs.appName);
       setTagline(prefs.tagline);
       if (prefs.theme) setTheme(prefs.theme);
       setLoading(false);
@@ -29,7 +31,8 @@ export default function Preferences() {
   }
 
   async function handleSave() {
-    await putPreferences({ id: 'app-preferences', tagline, theme });
+    await putPreferences({ id: 'app-preferences', appName, tagline, theme });
+    document.title = appName || "Ting Sun's Attender";
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -39,6 +42,19 @@ export default function Preferences() {
   return (
     <div className="page">
       <h1>Preferences</h1>
+      <div className="form-card">
+        <label htmlFor="appName" style={{ fontWeight: 600, fontSize: '0.95rem' }}>
+          Application Name
+        </label>
+        <input
+          id="appName"
+          type="text"
+          placeholder="Ting Sun's Attender"
+          value={appName}
+          onChange={e => setAppName(e.target.value)}
+        />
+      </div>
+
       <div className="form-card">
         <label htmlFor="tagline" style={{ fontWeight: 600, fontSize: '0.95rem' }}>
           Application Tag Line

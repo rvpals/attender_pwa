@@ -22,6 +22,7 @@ export interface AttendanceRecord {
 
 export interface Preferences {
   id: string;
+  appName: string;
   tagline: string;
   theme: string;
 }

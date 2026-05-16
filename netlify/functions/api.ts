@@ -119,7 +119,7 @@ export default async function handler(req: Request, context: Context) {
       const store = getStore('preferences');
       const prefs = await store.get('app-preferences', { type: 'json' });
       if (!prefs) {
-        return new Response(JSON.stringify({ id: 'app-preferences', tagline: '', theme: '' }), { headers });
+        return new Response(JSON.stringify({ id: 'app-preferences', appName: '', tagline: '', theme: '' }), { headers });
       }
       return new Response(JSON.stringify(prefs), { headers });
     }

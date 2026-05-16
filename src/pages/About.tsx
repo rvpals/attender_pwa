@@ -1,9 +1,20 @@
+import { useState, useEffect } from 'react';
+import { getPreferences } from '../db';
+
 export default function About() {
+  const [appName, setAppName] = useState("Ting Sun's Attender");
+
+  useEffect(() => {
+    getPreferences().then(prefs => {
+      if (prefs.appName) setAppName(prefs.appName);
+    });
+  }, []);
+
   return (
     <div className="page">
       <h1>About This Application</h1>
       <div className="form-card" style={{ textAlign: 'center', padding: '2rem' }}>
-        <p style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Ting Sun's Attender</p>
+        <p style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>{appName}</p>
         <p style={{ fontSize: '0.95rem', marginBottom: '1rem' }}>Version 1.4.0</p>
         <p style={{ color: 'var(--text-muted)' }}>Copyright &copy; 2026 rvpals@gmail.com</p>
       </div>
