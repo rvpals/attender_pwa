@@ -9,22 +9,23 @@ Attender is a Progressive Web App (PWA) for teachers to take classroom attendanc
 ## Commands
 
 ```bash
-npm run dev          # Start Vite dev server only (no API)
-npm run dev:netlify  # Start with Netlify Dev (frontend + functions)
+npm run dev          # Start Vite + Express concurrently (full local dev)
+npm run dev:client   # Start Vite dev server only
+npm run dev:server   # Start Express API server only
 npm run build        # Type-check + production build
+npm start            # Run production server (serves built frontend + API)
 npx tsc --noEmit    # Type-check only
 ```
-
-Use `npm run dev:netlify` for full local development (requires `netlify-cli` installed globally or via npx).
 
 ## Architecture
 
 - **Stack**: React 19 + TypeScript, Vite, vite-plugin-pwa (Workbox)
-- **Storage**: Netlify Blobs (key-value) accessed via a single Netlify Function
-- **API**: `netlify/functions/api.ts` — single function handling all CRUD routes
+- **Storage**: SQLite via better-sqlite3, database file at `server/data/attender.db`
+- **API**: Express server at `server/index.js` — handles all CRUD routes at `/api/*`
 - **Frontend data layer**: `src/db/index.ts` — thin fetch wrapper over the API
 - **Routing**: react-router-dom with flat page-based routes in `src/App.tsx`
 - **CSV parsing**: papaparse (used for student roster import)
+- **Dev proxy**: Vite proxies `/api` requests to Express on port 3001
 
 ### Data Model (`src/types/index.ts`)
 
@@ -32,20 +33,22 @@ Use `npm run dev:netlify` for full local development (requires `netlify-cli` ins
 - `ClassRoom` — name + array of student IDs (roster assignment)
 - `AttendanceRecord` — classId + date + array of present student IDs (absent = not in the array)
 
-### API Routes (`netlify/functions/api.ts`)
+### API Routes (`server/index.js`)
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | /students | List all students |
-| POST | /students | Create/update a student |
-| POST | /students/batch | Bulk import students |
-| DELETE | /students/:id | Delete a student |
-| GET | /classes | List all classes |
-| POST | /classes | Create/update a class |
-| DELETE | /classes/:id | Delete a class |
-| GET | /attendance?classId=&date= | Query attendance records |
-| POST | /attendance | Create/update attendance |
-| DELETE | /attendance/:id | Delete attendance record |
+| GET | /api/students | List all students |
+| POST | /api/students | Create/update a student |
+| POST | /api/students/batch | Bulk import students |
+| DELETE | /api/students/:id | Delete a student |
+| GET | /api/classes | List all classes |
+| POST | /api/classes | Create/update a class |
+| DELETE | /api/classes/:id | Delete a class |
+| GET | /api/attendance?classId=&date= | Query attendance records |
+| POST | /api/attendance | Create/update attendance |
+| DELETE | /api/attendance/:id | Delete attendance record |
+| GET | /api/preferences | Get app preferences |
+| POST | /api/preferences | Update app preferences |
 
 ### Page Structure (`src/pages/`)
 
@@ -64,4 +67,5 @@ Use `npm run dev:netlify` for full local development (requires `netlify-cli` ins
 - CSS is a single `src/index.css` file with mobile-first, touch-friendly sizing
 - No component library — plain CSS with CSS custom properties for theming
 - Icons in `public/` need real 192px and 512px PNG files for full PWA install support
-- Netlify Blobs store each record as a JSON blob keyed by its UUID
+- SQLite with junction tables for array fields (`class_students`, `attendance_students`)
+- Express serves built frontend in production (no separate static host needed)
