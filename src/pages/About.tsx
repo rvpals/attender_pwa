@@ -1,8 +1,21 @@
 import { useState, useEffect } from 'react';
 import { getPreferences } from '../db';
 
+async function refreshApp() {
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  for (const reg of registrations) {
+    await reg.unregister();
+  }
+  const cacheNames = await caches.keys();
+  for (const name of cacheNames) {
+    await caches.delete(name);
+  }
+  window.location.reload();
+}
+
 export default function About() {
   const [appName, setAppName] = useState("Ting Sun's Attender");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getPreferences().then(prefs => {
@@ -16,7 +29,14 @@ export default function About() {
       <div className="form-card" style={{ textAlign: 'center', padding: '2rem' }}>
         <p style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>{appName}</p>
         <p style={{ fontSize: '0.95rem', marginBottom: '1rem' }}>Version 1.4.0</p>
-        <p style={{ color: 'var(--text-muted)' }}>Copyright &copy; 2026 rvpals@gmail.com</p>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>Copyright &copy; 2026 rvpals@gmail.com</p>
+        <button
+          className="btn btn-primary"
+          onClick={() => { setRefreshing(true); refreshApp(); }}
+          disabled={refreshing}
+        >
+          {refreshing ? 'Refreshing...' : 'Refresh App'}
+        </button>
       </div>
 
       <h3 style={{ marginTop: '1.5rem', marginBottom: '0.75rem' }}>Change Log</h3>
