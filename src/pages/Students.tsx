@@ -10,9 +10,20 @@ export default function Students() {
   const [editing, setEditing] = useState<Student | null>(null);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [filter, setFilter] = useState('');
   const [viewMode, toggleView] = useViewMode('students-view');
 
   useEffect(() => { load(); }, []);
+
+  const filtered = students.filter(s => {
+    if (!filter) return true;
+    const q = filter.toLowerCase();
+    return s.firstName.toLowerCase().includes(q)
+      || s.lastName.toLowerCase().includes(q)
+      || s.nickname.toLowerCase().includes(q)
+      || s.studentId.toLowerCase().includes(q)
+      || s.note.toLowerCase().includes(q);
+  });
 
   async function load() {
     setStudents(await getAllStudents());
@@ -86,6 +97,13 @@ export default function Students() {
         <ViewToggle mode={viewMode} onToggle={toggleView} />
         <input type="file" accept=".csv" hidden ref={fileRef} onChange={handleFileChange} />
       </div>
+      <input
+        type="text"
+        placeholder="Filter students..."
+        value={filter}
+        onChange={e => setFilter(e.target.value)}
+        style={{ marginBottom: '0.75rem' }}
+      />
 
       {showImportDialog && (
         <div className="form-card">
@@ -106,7 +124,7 @@ export default function Students() {
 
       {viewMode === 'list' ? (
         <ul className="student-list">
-          {students.map(s => (
+          {filtered.map(s => (
             <li key={s.id} className="student-item">
               <div className="student-info">
                 <strong>{s.lastName}, {s.firstName}</strong>
@@ -123,7 +141,7 @@ export default function Students() {
         </ul>
       ) : (
         <div className="card-grid">
-          {students.map(s => (
+          {filtered.map(s => (
             <div key={s.id} className="item-card">
               <div className="item-card-avatar">
                 {s.firstName[0]}{s.lastName[0]}

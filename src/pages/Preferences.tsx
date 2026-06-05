@@ -18,12 +18,14 @@ export default function Preferences() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getPreferences().then(prefs => {
-      if (prefs.appName) setAppName(prefs.appName);
-      setTagline(prefs.tagline);
-      if (prefs.theme) setTheme(prefs.theme);
-      setLoading(false);
-    });
+    getPreferences()
+      .then(prefs => {
+        if (prefs.appName) setAppName(prefs.appName);
+        setTagline(prefs.tagline);
+        if (prefs.theme) setTheme(prefs.theme);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   function handleThemeChange(themeId: string) {

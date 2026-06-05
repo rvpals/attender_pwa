@@ -100,6 +100,16 @@ function ClassForm({ cls, students, onSave, onCancel }: {
 }) {
   const [name, setName] = useState(cls.name);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(cls.studentIds));
+  const [filter, setFilter] = useState('');
+
+  const filtered = students.filter(s => {
+    if (!filter) return true;
+    const q = filter.toLowerCase();
+    return s.firstName.toLowerCase().includes(q)
+      || s.lastName.toLowerCase().includes(q)
+      || s.nickname.toLowerCase().includes(q)
+      || s.studentId.toLowerCase().includes(q);
+  });
 
   function toggle(id: string) {
     setSelectedIds(prev => {
@@ -127,8 +137,15 @@ function ClassForm({ cls, students, onSave, onCancel }: {
           <button className="btn-sm" onClick={selectAll}>All</button>
           <button className="btn-sm" onClick={selectNone}>None</button>
         </div>
+        <input
+          type="text"
+          placeholder="Filter students..."
+          value={filter}
+          onChange={e => setFilter(e.target.value)}
+          style={{ marginBottom: '0.5rem' }}
+        />
         <ul className="roster-list">
-          {students.map(s => (
+          {filtered.map(s => (
             <li key={s.id} className={`roster-item ${selectedIds.has(s.id) ? 'selected' : ''}`} onClick={() => toggle(s.id)}>
               {s.lastName}, {s.firstName} {s.nickname && `"${s.nickname}"`}
             </li>
