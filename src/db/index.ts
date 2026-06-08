@@ -57,6 +57,10 @@ export async function getAttendanceForClassDate(classId: string, date: string): 
   return records[0];
 }
 
+export async function getAllAttendance(): Promise<AttendanceRecord[]> {
+  return request('/attendance');
+}
+
 export async function getAllAttendanceForClass(classId: string): Promise<AttendanceRecord[]> {
   return request(`/attendance?classId=${classId}`);
 }
